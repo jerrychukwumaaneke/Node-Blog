@@ -1,0 +1,85 @@
+1)we open a comman line and type in the following
+node -v
+npm init -y. this is used to create a json file and to ignore all the questions we use the -y
+ npm i bcrypt connect-mongo cookie-parser dotenv ejs express express-ejs-layouts express-session jsonwebtoken method-override mongoose
+ npm i nodemon --save-dev
+
+ 2)connecting to a server we create a new folder called CONFIG
+ mongoose.set('strictQuery', false); this line is switched of so that we dont have an error especially connecting to mongoose
+
+console.log(`Database connected ${conn.connection.host}`);
+ The .host property tells you the address (URL) of the database server you are connected to.
+
+ 3)for the post.js file
+ const schema = mongoose.Schema; This pulls the "Schema" tool out of the Mongoose library so you can use it to build your blueprint.
+
+new schema({ ... }) Here, you are defining the specific "rules" for a Blog Post:
+
+title & body: You’ve set these as String (text). By adding required: true, you are telling the database: "Don't ever save a post unless it has a title and content."
+
+createdAt & updatedAt: These are Date types. By setting a default: Date.now, you don’t have to manually type the date every time you write a post—the database will automatically "timestamp" it for you the moment it's created.
+
+module.exports = mongoose.model('Post', Postschema) This is the most important part. You are taking that blueprint (Postschema) and turning it into a Model named 'Post'.
+
+4)for the pagination we just do some touching in the main.js file
+
+5)this is used for the search
+let searchTerm = req.body.searchTerm;
+req.body: This is where Express stores data sent from an HTML <form>.
+
+.searchTerm: This must match the name="searchTerm" attribute of the input field in your HTML.
+
+res.send(searchTerm);res.send: This stops the execution and sends a response back to the browser window.
+
+The Result: Instead of seeing your beautiful blog layout, the user will just see a white screen with the word they typed (e.g., "NodeJS").
+
+6)This is for why we are always getting our layouts always sandwithched in the middle of the header and the footer 
+
+That "magic" is happening because of a package called express-ejs-layouts.
+
+In a standard EJS setup, you would have to manually include the header and footer on every single page. But since you are likely using a Master Layout, your app is essentially "sandwiching" your content between the header and the footer automatically.
+
+Here is the breakdown of the three parts making this happen:
+
+1. The "Power Source" (app.js)
+In your main server file (app.js), you have these two lines of code. This tells Express: "Hey, don't just render the page I ask for; wrap it in a layout first."
+
+JavaScript
+const expressLayouts = require('express-ejs-layouts');
+
+app.use(expressLayouts);
+app.set('layout', './layouts/main'); // This points to your 'sandwich' file
+2. The "Sandwich" (views/layouts/main.ejs)
+This is your master file. It contains the <html> tags, the <head>, and the <body>. Somewhere in the middle of this file, you have this specific tag:
+
+HTML
+<%- body %>
+This tag is the secret. Whenever you call res.render('index') or res.render('post'), Express takes the HTML from that specific file and injects it exactly where that <%- body %> tag is sitting. The header above it and the footer below it stay exactly where they are.
+
+3. The "Handoff" (main.js)
+When you write your route, you just say: res.render('index', { data });
+
+You don't mention the header or footer here. Because of the settings in Step 1, Express automatically looks for main.ejs, grabs your index.ejs content, and builds the full page for you.
+
+The Visual Flow
+Imagine your website as a picture frame:
+
+The Frame (Layout): Contains the Header and Footer. It never changes.
+
+The Picture (Body): This is your index.ejs, about.ejs, or post.ejs.
+
+The Result: Express puts the "Picture" into the "Frame" before sending it to your browser.
+
+Pro Tip: What if you don't want the header/footer?
+If you ever want to render a page (like a "Maintenance" or "Login" page) without the usual header and footer, you can tell Express to ignore the layout in that specific route:
+
+JavaScript
+res.render('login', { layout: false }); // This bypasses the main.ejs layout
+Does that make sense? Would you like to see how to change the title of the page dynamically so it changes in the header every time you click a different post?
+
+7)one thing to always take note of is that we have to create a schema before we can push to the database
+for the post, we created a post schema and noe for the user login details we created a user schema for it
+take note fo the password and the unique details we did for the username
+
+8) we actually need to have a method override before we can actually make ue of the method PUT and Delete
+we go the app.js file and import it then go the middle ware part and do the app.use(methodoverride(_method ))
